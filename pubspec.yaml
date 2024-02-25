@@ -2,6 +2,7 @@ name: swos_cli
 description: A sample command-line application with basic argument parsing.
 version: 0.0.1
 repository: https://github.com/edufolly/swos-cli
+publish_to: none
 
 environment:
   sdk: ^3.3.0
@@ -11,10 +12,13 @@ dependencies:
   agattp:
     git:
       url: git@github.com:anlix-io/agattp.git
-      ref: v0.0.5
+      ref: v0.0.6
 
   # https://pub.dev/packages/args
   args: ^2.4.2
+
+  # https://pub.dev/packages/cli_table
+  cli_table: ^1.0.2
 
 dev_dependencies:
   # https://pub.dev/packages/lints

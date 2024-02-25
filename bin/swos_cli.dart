@@ -1,61 +1,52 @@
-import 'package:args/args.dart';
+import 'dart:io';
 
-const String version = '0.0.1';
+import 'package:args/command_runner.dart';
 
-ArgParser buildParser() {
-  return ArgParser()
-    ..addFlag(
-      'help',
-      abbr: 'h',
-      negatable: false,
-      help: 'Print this usage information.',
-    )
-    ..addFlag(
-      'verbose',
-      abbr: 'v',
-      negatable: false,
-      help: 'Show additional command output.',
-    )
-    ..addFlag(
-      'version',
-      negatable: false,
-      help: 'Print the tool version.',
-    );
-}
+import 'config.dart';
+import 'hosts/hosts_command.dart';
+import 'version/version_command.dart';
 
-void printUsage(ArgParser argParser) {
-  print('Usage: dart swos_cli.dart <flags> [arguments]');
-  print(argParser.usage);
-}
-
+///
+///
+///
 void main(List<String> arguments) {
-  final ArgParser argParser = buildParser();
-  try {
-    final ArgResults results = argParser.parse(arguments);
-    bool verbose = false;
+  final CommandRunner<void> runner =
+      CommandRunner<void>('swos', 'SwOS CLI')
+        ..addCommand(VersionCommand())
+        ..addCommand(HostsCommand());
 
-    // Process the parsed arguments.
-    if (results.wasParsed('help')) {
-      printUsage(argParser);
-      return;
-    }
-    if (results.wasParsed('version')) {
-      print('swos_cli version: $version');
-      return;
-    }
-    if (results.wasParsed('verbose')) {
-      verbose = true;
-    }
+  String user = Platform.environment['SWOS_CLI_USER_FILE'] ?? '';
 
-    // Act on the arguments provided.
-    print('Positional arguments: ${results.rest}');
-    if (verbose) {
-      print('[VERBOSE] All arguments: ${results.arguments}');
+  if (user.isNotEmpty) {
+    final File file = File(user);
+    if (file.existsSync()) {
+      user = file.readAsStringSync();
     }
-  } on FormatException catch (e) {
-    // Print usage information if an invalid argument was provided.
-    print(e.message);
-    print('');
-    printUsage(argParser);
   }
+
+  if (user.isEmpty) {
+    user = Platform.environment['SWOS_CLI_USER'] ?? '';
+  }
+
+  Config().user = user;
+
+  String password = Platform.environment['SWOS_CLI_PASSWORD_FILE'] ?? '';
+
+  if (password.isNotEmpty) {
+    final File file = File(password);
+    if (file.existsSync()) {
+      password = file.readAsStringSync();
+    }
+  }
+
+  if (password.isEmpty) {
+    password = Platform.environment['SWOS_CLI_PASSWORD'] ?? '';
+  }
+
+  Config().password = password;
+
+  runner.run(arguments).catchError((dynamic error) {
+    stderr.writeln(error);
+    exit(64);
+  });
 }
