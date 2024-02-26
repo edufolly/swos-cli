@@ -1,3 +1,4 @@
+import 'package:agattp/agattp.dart';
 import 'package:args/command_runner.dart';
 
 import 'config.dart';
@@ -63,6 +64,25 @@ abstract class AbstractLeafCommand extends Command<void> {
     }
 
     return device.replace(path: path);
+  }
+
+  ///
+  ///
+  ///
+  Agattp get agattp {
+    AgattpConfig config = AgattpConfig(timeout: Config().timeout);
+
+    if (Config().user.isNotEmpty) {
+      config = AgattpConfig(
+        timeout: Config().timeout,
+        auth: AgattpAuthDigest(
+          username: Config().user,
+          password: Config().password,
+        ),
+      );
+    }
+
+    return Agattp(config: config);
   }
 
   ///

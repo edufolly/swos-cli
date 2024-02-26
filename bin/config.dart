@@ -17,5 +17,6 @@ class Config {
 
   String user = '';
   String password = '';
+  int timeout = 5000;
   bool verbose = false;
 }

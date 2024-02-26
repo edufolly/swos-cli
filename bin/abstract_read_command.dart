@@ -4,7 +4,6 @@ import 'package:agattp/agattp.dart';
 import 'package:cli_table/cli_table.dart';
 
 import 'abstract_leaf_command.dart';
-import 'config.dart';
 
 ///
 ///
@@ -74,19 +73,7 @@ abstract class AbstractReadCommand extends AbstractLeafCommand {
 
     final String format = argResults?['format'].toString() ?? 'json';
 
-    AgattpConfig config = const AgattpConfig(timeout: 5000);
-
-    if (Config().user.isNotEmpty) {
-      config = AgattpConfig(
-        timeout: 5000,
-        auth: AgattpAuthDigest(
-          username: Config().user,
-          password: Config().password,
-        ),
-      );
-    }
-
-    final AgattpResponse response = await Agattp(config: config).get(device);
+    final AgattpResponse response = await agattp.get(device);
 
     if (format == 'raw') {
       print(response.body);

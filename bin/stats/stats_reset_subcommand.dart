@@ -1,7 +1,6 @@
 import 'package:agattp/agattp.dart';
 
 import '../abstract_leaf_command.dart';
-import '../config.dart';
 
 ///
 ///
@@ -32,21 +31,10 @@ class StatsResetSubcommand extends AbstractLeafCommand {
   Future<void> run() async {
     super.run();
 
-    AgattpConfig config = const AgattpConfig(timeout: 5000);
+    final AgattpResponse response = await agattp.post(device);
 
-    if (Config().user.isNotEmpty) {
-      config = AgattpConfig(
-        timeout: 5000,
-        auth: AgattpAuthDigest(
-          username: Config().user,
-          password: Config().password,
-        ),
-      );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to reset the stats.');
     }
-
-    final AgattpResponse response = await Agattp(config: config).post(device);
-
-    print(response.statusCode);
-    print(response.body);
   }
 }
