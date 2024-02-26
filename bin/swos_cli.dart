@@ -4,16 +4,17 @@ import 'package:args/command_runner.dart';
 
 import 'config.dart';
 import 'hosts/hosts_command.dart';
+import 'stats/stats_command.dart';
 import 'version/version_command.dart';
 
 ///
 ///
 ///
 void main(List<String> arguments) {
-  final CommandRunner<void> runner =
-      CommandRunner<void>('swos', 'SwOS CLI')
-        ..addCommand(VersionCommand())
-        ..addCommand(HostsCommand());
+  final CommandRunner<void> runner = CommandRunner<void>('swos', 'SwOS CLI')
+    ..addCommand(VersionCommand())
+    ..addCommand(HostsCommand())
+    ..addCommand(StatsCommand());
 
   String user = Platform.environment['SWOS_CLI_USER_FILE'] ?? '';
 

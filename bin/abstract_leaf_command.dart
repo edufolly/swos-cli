@@ -44,14 +44,25 @@ abstract class AbstractLeafCommand extends Command<void> {
         help: 'The URL address of the SwOS device',
         valueHelp: 'http://10.0.10.90',
         mandatory: true,
-      )
-      ..addOption(
-        'format',
-        abbr: 'f',
-        help: 'The output format',
-        allowed: <String>['json', 'table'],
-        defaultsTo: 'json',
       );
+  }
+
+  ///
+  ///
+  ///
+  String get path;
+
+  ///
+  ///
+  ///
+  Uri get device {
+    final Uri? device = Uri.tryParse(argResults!['device'].toString());
+
+    if (device == null) {
+      throw ArgumentError('The device option is a invalid URL');
+    }
+
+    return device.replace(path: path);
   }
 
   ///
@@ -64,36 +75,4 @@ abstract class AbstractLeafCommand extends Command<void> {
       throw ArgumentError('The device option is required');
     }
   }
-
-  ///
-  ///
-  ///
-  String responseConvert(String data) => data
-      .replaceAllMapped(
-        RegExp(r"(\w+):'?([^',}]*)'?([,}])"),
-        (Match match) =>
-            '"${match.group(1)}": "${match.group(2)}"${match.group(3)}',
-      )
-      .replaceAllMapped(
-        RegExp('"(0x[0-9a-fA-F]+)"'),
-        (Match match) =>
-            (int.tryParse(match.group(1).toString()) ?? 0).toString(),
-      );
-
-  ///
-  ///
-  ///
-  String macConvert(dynamic data) => List<String>.generate(
-        data.toString().length ~/ 2,
-        (int i) => data.toString().substring(i * 2, i * 2 + 2),
-      ).join(':');
-
-  ///
-  ///
-  ///
-  String textFormat(String data) {
-
-    return 'vazio';
-  }
-
 }

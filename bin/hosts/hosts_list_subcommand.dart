@@ -1,15 +1,9 @@
-import 'dart:convert';
-
-import 'package:agattp/agattp.dart';
-import 'package:cli_table/cli_table.dart';
-
-import '../abstract_leaf_command.dart';
-import '../config.dart';
+import '../abstract_read_command.dart';
 
 ///
 ///
 ///
-class HostsListSubcommand extends AbstractLeafCommand {
+class HostsListSubcommand extends AbstractReadCommand {
   ///
   ///
   ///
@@ -26,59 +20,29 @@ class HostsListSubcommand extends AbstractLeafCommand {
   ///
   ///
   @override
-  Future<void> run() async {
-    super.run();
+  String get path => '/!dhost.b';
 
-    Uri? device = Uri.tryParse(argResults!['device'].toString());
+  ///
+  ///
+  ///
+  @override
+  List<dynamic> get headers => <String>['Port', 'Address', 'Vlan ID'];
 
-    if (device == null) {
-      throw ArgumentError('The device option is a invalid URL');
-    }
+  ///
+  ///
+  ///
+  @override
+  List<dynamic> buildRow(Map<String, dynamic> row) => <dynamic>[
+        (row['prt'] as int) + 1,
+        macFormat(row['adr']),
+        row['vid'],
+      ];
 
-    device = device.replace(path: '/!dhost.b');
-
-    AgattpConfig config = const AgattpConfig(timeout: 5000);
-
-    if (Config().user.isNotEmpty) {
-      config = AgattpConfig(
-        timeout: 5000,
-        auth: AgattpAuthDigest(
-          username: Config().user,
-          password: Config().password,
-        ),
-      );
-    }
-
-    final AgattpResponse response = await Agattp(config: config).get(device);
-
-    final String data = responseConvert(response.body);
-
-    switch (argResults?['format'].toString()) {
-      case 'json':
-        print(data);
-      case 'table':
-        final List<dynamic> list = json.decode(data);
-
-        final Table table = Table(
-          style: const TableStyle(
-            header: <String>['lightskyblue'],
-          ),
-          header: <String>['Port', 'Address', 'Vlan ID'],
-        );
-
-        for (final Map<String, dynamic> item in list) {
-          table.add(<dynamic>[
-            (item['prt'] as int) + 1,
-            macConvert(item['adr']),
-            item['vid'],
-          ]);
-        }
-
-        table.sort((dynamic a, dynamic b) => a[0].compareTo(b[0]));
-
-        print(table);
-      default:
-        throw ArgumentError('The format option is invalid');
-    }
-  }
+  ///
+  ///
+  ///
+  @override
+  Comparator? get sort => (dynamic a, dynamic b) =>
+      // ignore: avoid_dynamic_calls
+      a[0].compareTo(b[0]);
 }

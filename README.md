@@ -7,3 +7,8 @@ A command line interface for the Mikrotik SwOS.
 Tested with the following devices:
 
 [X] CSS326-24G-2S+RM
+
+
+### Inspired by
+
+https://github.com/ollie-galbraith/mikrotik_switch_api/
