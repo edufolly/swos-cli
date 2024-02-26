@@ -34,7 +34,7 @@ class StatsResetSubcommand extends AbstractLeafCommand {
     final AgattpResponse response = await agattp.post(device);
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to reset the stats.');
+      throw Exception('Failed to reset.');
     }
   }
 }

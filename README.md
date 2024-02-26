@@ -6,7 +6,7 @@ A command line interface for the Mikrotik SwOS.
 
 Tested with the following devices:
 
-- [X] CSS326-24G-2S+RM
+- [X] CSS326-24G-2S+
 
 
 ### Inspired by
