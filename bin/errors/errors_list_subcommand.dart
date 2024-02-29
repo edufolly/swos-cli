@@ -13,34 +13,44 @@ class ErrorsListSubcommand extends StatsListSubcommand {
   ///
   ///
   ///
-  // TODO(edufolly): Create errors table.
   @override
   List<dynamic> get headers => <String>[
         'Port',
-        'Rx Rate',
-        'Tx Rate',
-        'Rx Package\nRate',
-        'Tx Package\nRate',
-        'Rx Bytes',
-        'Tx Bytes',
-        'Rx Total\nPackets',
-        'Tx Total\nPackets',
+        'Rx Pauses',
+        'Rx MAC\nErrors',
+        'Rx FCS\nErrors',
+        'Rx Jabber',
+        'Rx Runts',
+        'Rx Fragments',
+        'Rx Overruns',
+        'Tx Pauses',
+        'Tx Underruns',
+        'Tx Collisions',
+        'Tx Multiple\nCollisions',
+        'Tx Excessive\nCollisions',
+        'Tx Late\nCollisions',
+        'Tx Deferred',
       ];
 
   ///
   ///
   ///
-  // TODO(edufolly): Create errors table.
   @override
   List<dynamic> buildRow(Map<String, dynamic> row) => <dynamic>[
         (row['prt'] as int) + 1,
-        shortNumber(row['rrb']),
-        shortNumber(row['trb']),
-        row['rrp'],
-        row['trp'],
-        shortNumber(row['rb']),
-        shortNumber(row['tb']),
-        shortNumber(row['rtp']),
-        shortNumber(row['ttp']),
+        row['rpp'],
+        row['rte'],
+        row['rfcs'],
+        row['rae'],
+        row['rr'],
+        row['fr'],
+        row['rov'],
+        row['tpp'],
+        row['tur'],
+        row['tcl'],
+        row['tmc'],
+        row['tec'],
+        row['tlc'],
+        row['tdf'],
       ];
 }
