@@ -36,7 +36,7 @@ class ErrorsListSubcommand extends StatsListSubcommand {
   ///
   ///
   @override
-  List<dynamic> buildRow(Map<String, dynamic> row) => <dynamic>[
+  dynamic buildRow(Map<String, dynamic> row) => <dynamic>[
         (row['prt'] as int) + 1,
         row['rpp'],
         row['rte'],

@@ -7,6 +7,7 @@ import 'errors/errors_command.dart';
 import 'histogram/histogram_command.dart';
 import 'hosts/hosts_command.dart';
 import 'stats/stats_command.dart';
+import 'system/system_command.dart';
 import 'version/version_command.dart';
 
 ///
@@ -18,6 +19,7 @@ void main(List<String> arguments) {
     ..addCommand(HistogramCommand())
     ..addCommand(HostsCommand())
     ..addCommand(StatsCommand())
+    ..addCommand(SystemCommand())
     ..addCommand(VersionCommand());
 
   String user = Platform.environment['SWOS_CLI_USER_FILE'] ?? '';

@@ -32,7 +32,7 @@ class HostsListSubcommand extends AbstractReadCommand {
   ///
   ///
   @override
-  List<dynamic> buildRow(Map<String, dynamic> row) => <dynamic>[
+  dynamic buildRow(Map<String, dynamic> row) => <dynamic>[
         (row['prt'] as int) + 1,
         macFormat(row['adr']),
         row['vid'],

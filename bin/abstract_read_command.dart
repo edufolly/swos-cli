@@ -45,7 +45,7 @@ abstract class AbstractReadCommand extends AbstractLeafCommand {
   ///
   ///
   ///
-  List<dynamic> buildRow(Map<String, dynamic> row);
+  dynamic buildRow(Map<String, dynamic> row);
 
   ///
   ///
@@ -106,7 +106,10 @@ abstract class AbstractReadCommand extends AbstractLeafCommand {
     );
 
     for (final Map<String, dynamic> row in list) {
-      table.add(buildRow(row));
+      final dynamic bRow = buildRow(row);
+      if (bRow != null) {
+        table.add(bRow);
+      }
     }
 
     if (sort != null) {
@@ -119,29 +122,53 @@ abstract class AbstractReadCommand extends AbstractLeafCommand {
   ///
   ///
   ///
-  String macFormat(dynamic data) => List<String>.generate(
-        data.toString().length ~/ 2,
-        (int i) => data.toString().substring(i * 2, i * 2 + 2),
-      ).join(':');
+  String macFormat(dynamic value) => RegExp('..')
+      .allMatches(value.toString())
+      .map((Match m) => m.group(0))
+      .join(':');
 
   ///
   ///
   ///
-  String shortNumber(dynamic number) {
-    final num value = num.parse(number.toString());
+  String shortNumber(dynamic value) {
+    final num v = num.parse(value.toString());
 
-    if (value < 1000) {
-      return value.toString();
+    if (v < 1000) {
+      return v.toString();
     }
 
-    if (value < 1000000) {
-      return '${(value / 1000).toStringAsFixed(1)}K';
+    if (v < 1000000) {
+      return '${(v / 1000).toStringAsFixed(1)}K';
     }
 
-    if (value < 1000000000) {
-      return '${(value / 1000000).toStringAsFixed(1)}M';
+    if (v < 1000000000) {
+      return '${(v / 1000000).toStringAsFixed(1)}M';
     }
 
-    return '${(value / 1000000000).toStringAsFixed(1)}G';
+    return '${(v / 1000000000).toStringAsFixed(1)}G';
+  }
+
+  ///
+  ///
+  ///
+  String hexToString(dynamic value) => String.fromCharCodes(
+        RegExp('..')
+            .allMatches(value.toString())
+            .map((Match m) => int.parse(m.group(0)!, radix: 16)),
+      );
+
+  ///
+  ///
+  ///
+  String millisToString(dynamic value) {
+    final Duration d =
+        Duration(milliseconds: int.tryParse(value.toString()) ?? -1);
+
+    return <String>[
+      if (d.inDays > 0) '${d.inDays} day${d.inDays > 1 ? 's' : ''} ',
+      '${(d.inHours % 24).toString().padLeft(2, '0')}:',
+      '${(d.inMinutes % 60).toString().padLeft(2, '0')}:',
+      (d.inSeconds % 60).toString().padLeft(2, '0'),
+    ].join();
   }
 }

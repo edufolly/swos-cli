@@ -17,6 +17,9 @@ dependencies:
   # https://pub.dev/packages/args
   args: ^2.4.2
 
+  # https://pub.dev/packages/chalkdart
+  chalkdart: ^2.2.1
+
   # https://pub.dev/packages/cli_table
   cli_table: ^1.0.2
 
