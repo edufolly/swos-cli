@@ -4,6 +4,7 @@ import 'package:agattp/agattp.dart';
 import 'package:cli_table/cli_table.dart';
 
 import 'abstract_leaf_command.dart';
+import 'config.dart';
 
 ///
 ///
@@ -17,14 +18,9 @@ abstract class AbstractReadCommand extends AbstractLeafCommand {
       'format',
       abbr: 'f',
       help: 'The output format',
-      allowed: <String>['raw', 'raw-json', 'json', 'table'],
-      allowedHelp: <String, String>{
-        'raw': 'Print the raw output',
-        'raw-json': 'Print the raw output as valid JSON',
-        'json': 'Print the output as JSON after transformation',
-        'table': 'Print the output as a table',
-      },
-      defaultsTo: 'json',
+      allowed: Format.allowed,
+      allowedHelp: Format.allowedHelp,
+      defaultsTo: Format.defaultValue.value,
     );
   }
 
@@ -71,13 +67,27 @@ abstract class AbstractReadCommand extends AbstractLeafCommand {
   Future<void> run() async {
     super.run();
 
-    final String format = argResults?['format'].toString() ?? 'json';
+    print(process(Format.fromString(argResults?['format'])));
+  }
 
-    final AgattpResponse response = await agattp.get(device);
+  ///
+  ///
+  ///
+  Future<String> process(Format format, {String? device}) async {
+    final Uri uri = getUri(device);
 
-    if (format == 'raw') {
-      print(response.body);
-      return;
+    if (Config().verbose) {
+      print('GET: $uri');
+    }
+
+    final AgattpResponse response = await agattp.get(uri);
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to get data (${response.statusCode}).');
+    }
+
+    if (format == Format.raw) {
+      return response.body;
     }
 
     final String data = firstConvert(response.body).replaceAllMapped(
@@ -86,16 +96,14 @@ abstract class AbstractReadCommand extends AbstractLeafCommand {
           (int.tryParse(match.group(1).toString()) ?? 0).toString(),
     );
 
-    if (format == 'raw-json') {
-      print(data);
-      return;
+    if (format == Format.rawJson) {
+      return data;
     }
 
     final List<Map<String, dynamic>> list = transform(json.decode(data));
 
-    if (format == 'json') {
-      print(json.encode(list));
-      return;
+    if (format == Format.json) {
+      return json.encode(list);
     }
 
     final Table table = Table(
@@ -116,59 +124,6 @@ abstract class AbstractReadCommand extends AbstractLeafCommand {
       table.sort(sort);
     }
 
-    print(table);
-  }
-
-  ///
-  ///
-  ///
-  String macFormat(dynamic value) => RegExp('..')
-      .allMatches(value.toString())
-      .map((Match m) => m.group(0))
-      .join(':');
-
-  ///
-  ///
-  ///
-  String shortNumber(dynamic value) {
-    final num v = num.parse(value.toString());
-
-    if (v < 1000) {
-      return v.toString();
-    }
-
-    if (v < 1000000) {
-      return '${(v / 1000).toStringAsFixed(1)}K';
-    }
-
-    if (v < 1000000000) {
-      return '${(v / 1000000).toStringAsFixed(1)}M';
-    }
-
-    return '${(v / 1000000000).toStringAsFixed(1)}G';
-  }
-
-  ///
-  ///
-  ///
-  String hexToString(dynamic value) => String.fromCharCodes(
-        RegExp('..')
-            .allMatches(value.toString())
-            .map((Match m) => int.parse(m.group(0)!, radix: 16)),
-      );
-
-  ///
-  ///
-  ///
-  String millisToString(dynamic value) {
-    final Duration d =
-        Duration(milliseconds: int.tryParse(value.toString()) ?? -1);
-
-    return <String>[
-      if (d.inDays > 0) '${d.inDays} day${d.inDays > 1 ? 's' : ''} ',
-      '${(d.inHours % 24).toString().padLeft(2, '0')}:',
-      '${(d.inMinutes % 60).toString().padLeft(2, '0')}:',
-      (d.inSeconds % 60).toString().padLeft(2, '0'),
-    ].join();
+    return table.toString();
   }
 }

@@ -6,6 +6,7 @@ import 'config.dart';
 import 'errors/errors_command.dart';
 import 'histogram/histogram_command.dart';
 import 'hosts/hosts_command.dart';
+import 'snmp/snmp_command.dart';
 import 'stats/stats_command.dart';
 import 'system/system_command.dart';
 import 'version/version_command.dart';
@@ -18,6 +19,7 @@ void main(List<String> arguments) {
     ..addCommand(ErrorsCommand())
     ..addCommand(HistogramCommand())
     ..addCommand(HostsCommand())
+    ..addCommand(SnmpCommand())
     ..addCommand(StatsCommand())
     ..addCommand(SystemCommand())
     ..addCommand(VersionCommand());

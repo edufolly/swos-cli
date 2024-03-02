@@ -31,10 +31,10 @@ class SystemRebootSubcommand extends AbstractLeafCommand {
   Future<void> run() async {
     super.run();
 
-    final AgattpResponse response = await agattp.post(device);
+    final AgattpResponse response = await agattp.post(getUri());
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to reboot.');
+      throw Exception('Failed to reboot (${response.statusCode}).');
     }
   }
 }
